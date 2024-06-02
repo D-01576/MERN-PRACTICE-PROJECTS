@@ -95,4 +95,4 @@ app.post("/area", async (req, res) => {
         pass: user.pass
     });
 });
-app.listen(3000)
+app.listen(5173)
