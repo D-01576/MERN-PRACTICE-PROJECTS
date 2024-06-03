@@ -1,7 +1,9 @@
 const zod = require("zod")
+const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken")
 const {admin ,courses} = require("../Database/index")
 const secret = "myscret123"
+const saltRounds = 10;
 
 function checkformat(req,res,next){
     const {email,password} = req.headers;
@@ -31,9 +33,10 @@ async function createuser(req,res,next){
         return
     }
 
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const newadmin = new admin({
         email,
-        password,
+        hashedPassword,
         totalsalecourses: 0,
         totalsale: 0
     })
@@ -55,7 +58,8 @@ async function signinuser(req,res,next){
         })
         return
     }
-    if(!(user.email === email && user.password === password)){
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    if(!(user.email === email && user.password === hashedPassword)){
         res.json({
             status: "Error",
             message: "wrong email or password"
